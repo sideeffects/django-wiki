@@ -75,7 +75,7 @@ class URLPath(MPTTModel):
         )
     )
 
-    SLUG_MAX_LENGTH = 50
+    SLUG_MAX_LENGTH = 100
 
     slug = models.SlugField(verbose_name=_('slug'), null=True, blank=True,
                             max_length=SLUG_MAX_LENGTH)
