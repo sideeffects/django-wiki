@@ -1,17 +1,16 @@
 from django import template
 from wiki.plugins.macros import settings
-from wiki.plugins.macros.mdx.macro import MacroPreprocessor
+from wiki.plugins.macros.mdx.macro import MacroPattern
 
 register = template.Library()
 
 
 @register.inclusion_tag(
-    'wiki/plugins/templatetags/article_list.html',
-    takes_context=True
+    "wiki/plugins/templatetags/article_list.html", takes_context=True
 )
 def article_list(context, urlpath, depth):
-    context['parent'] = urlpath
-    context['depth'] = depth
+    context["parent"] = urlpath
+    context["depth"] = depth
     return context
 
 
@@ -19,6 +18,6 @@ def article_list(context, urlpath, depth):
 def allowed_macros():
     for method in settings.METHODS:
         try:
-            yield getattr(MacroPreprocessor, method).meta
+            yield getattr(MacroPattern, method).meta
         except AttributeError:
             continue
