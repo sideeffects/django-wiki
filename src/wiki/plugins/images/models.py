@@ -3,8 +3,10 @@ import os.path
 from django.conf import settings as django_settings
 from django.db import models
 from django.db.models import signals
-from django.utils.translation import gettext, gettext_lazy as _
-from wiki.models.pluginbase import RevisionPlugin, RevisionPluginRevision
+from django.utils.translation import gettext
+from django.utils.translation import gettext_lazy as _
+from wiki.models.pluginbase import RevisionPlugin
+from wiki.models.pluginbase import RevisionPluginRevision
 
 from . import settings
 
@@ -115,17 +117,27 @@ class ImageRevision(RevisionPluginRevision):
             return gettext("Current revision not set!!")
 
 
-def on_image_revision_delete(instance, *args, **kwargs):
+def on_image_revision_delete(instance, *args, **kwargs):  # noqa: max-complexity=11
     if not instance.image:
         return
 
-    # Remove image file
-    instance.image.delete(save=False)
-
+    path = None
     try:
-        path = instance.image.path.split("/")[:-1]
+        path = os.path.dirname(instance.image.path)
     except NotImplementedError:
         # This backend storage doesn't implement 'path' so there is no path to delete
+        pass
+    except ValueError:
+        # in case of Value error
+        # https://github.com/django-wiki/django-wiki/issues/936
+        pass
+    finally:
+        # Remove image file
+        instance.image.delete(save=False)
+
+    if path is None:
+        # This backend storage doesn't implement 'path' so there is no path to delete
+        # or some other error (ValueError)
         return
 
     # Clean up empty directories

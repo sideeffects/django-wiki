@@ -10,12 +10,10 @@ from wiki.models import URLPath
 from wiki.plugins.images import models
 from wiki.plugins.images.wiki_plugin import ImagePlugin
 
-from ...base import (
-    ArticleWebTestUtils,
-    DjangoClientTestBase,
-    RequireRootArticleMixin,
-    wiki_override_settings,
-)
+from ...base import ArticleWebTestUtils
+from ...base import DjangoClientTestBase
+from ...base import RequireRootArticleMixin
+from ...base import wiki_override_settings
 
 
 class ImageTests(RequireRootArticleMixin, ArticleWebTestUtils, DjangoClientTestBase):
@@ -106,10 +104,10 @@ class ImageTests(RequireRootArticleMixin, ArticleWebTestUtils, DjangoClientTestB
         output = self.get_article("[image:1]", True)
         image_rev = models.Image.objects.get().current_revision.imagerevision
         expected = (
-            '<figure class="thumbnail">'
-            '<a href="' + image_rev.image.name + '">'
-            '<img alt="test\.gif" src="cache/.*\.jpg">'
-            '</a><figcaption class="caption"></figcaption></figure>'
+            r'<figure class="thumbnail">'
+            r'<a href="' + image_rev.image.name + '">'
+            r'<img alt="test\.gif" src="cache/.*\.jpg">'
+            r'</a><figcaption class="caption"></figcaption></figure>'
         )
         self.assertRegexpMatches(output, expected)
 
@@ -117,10 +115,10 @@ class ImageTests(RequireRootArticleMixin, ArticleWebTestUtils, DjangoClientTestB
         output = self.get_article("[image:1 align:right size:large]", True)
         image_rev = models.Image.objects.get().current_revision.imagerevision
         expected = (
-            '<figure class="thumbnail pull-right">'
-            '<a href="' + image_rev.image.name + '">'
-            '<img alt="test\.gif" src="cache/.*\.jpg"></a>'
-            '<figcaption class="caption"></figcaption></figure>'
+            r'<figure class="thumbnail float-right">'
+            r'<a href="' + image_rev.image.name + '">'
+            r'<img alt="test\.gif" src="cache/.*\.jpg"></a>'
+            r'<figcaption class="caption"></figcaption></figure>'
         )
         self.assertRegexpMatches(output, expected)
 
@@ -242,6 +240,36 @@ class ImageTests(RequireRootArticleMixin, ArticleWebTestUtils, DjangoClientTestB
         self.assertEqual(models.Image.objects.count(), 0)
         self.assertIs(os.path.exists(f_path), False)
 
+    def test_add_revision_purge_image(self):
+        """
+        Tests that an image with more than one revision is really purged
+        """
+        # use another test to stage this one
+        self.test_add_revision()
+
+        image = models.Image.objects.get()
+        image_revision = image.current_revision.imagerevision
+        f_path = image_revision.image.file.name
+
+        self.assertIs(os.path.exists(f_path), True)
+
+        response = self.client.post(
+            reverse(
+                "wiki:images_purge",
+                kwargs={
+                    "article_id": self.root_article,
+                    "image_id": image.pk,
+                    "path": "",
+                },
+            ),
+            data={"confirm": True},
+        )
+        self.assertRedirects(
+            response, reverse("wiki:images_index", kwargs={"path": ""})
+        )
+        self.assertEqual(models.Image.objects.count(), 0)
+        self.assertIs(os.path.exists(f_path), False)
+
     @wiki_override_settings(ACCOUNT_HANDLING=True)
     def test_login_on_revision_add(self):
         self._create_test_image(path="")
@@ -249,7 +277,7 @@ class ImageTests(RequireRootArticleMixin, ArticleWebTestUtils, DjangoClientTestB
         image = models.Image.objects.get()
         url = reverse(
             "wiki:images_add_revision",
-            kwargs={"article_id": self.root_article, "image_id": image.pk, "path": "",},
+            kwargs={"article_id": self.root_article, "image_id": image.pk, "path": ""},
         )
         response = self.client.post(url, data={"image": self.generate_photo_file()})
         self.assertRedirects(response, "{}?next={}".format(reverse("wiki:login"), url))

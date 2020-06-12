@@ -9,15 +9,25 @@ Release plan
 * **0.3.x** series suppors Django 1.11. As with the upstream Django release, 0.3 was be the last series with Python 2.7 support.
 * **0.4.x** supports Django 1.11 and Django 2.1 and Python 3.4+.
 * **0.5.x** Remove Django 1.11 support, adds Django 2.2 and 3.x support. Python 3.5+.
-* **0.6.x (unreleased)** Targets Bootstrap v4, if you are interested in this work, please get in touch on Github!
+* **0.6.x** Targets Bootstrap v4, if you are interested in this work, please get in touch on Github!
+* **0.7.x** Milestone TBA
 
 
-0.6b1
------
+0.6
+---
+
+Released on 2020-06-03.
+
+.. warning::
+
+  These release contains Bootstrap v4. If you have overridden django-wiki's templates but rely on
+  the distributed Bootstrap CSS, then a lot of CSS class names have changed. Please refer to
+  the `Bootstrap Documentation <https://getbootstrap.com/docs/4.4/getting-started/introduction/>`__.
 
 Added
 ~~~~~
 
+* Bootstrap 4 replaces Bootstrap 3: Improved default theming. :url-issue:`1035` (slinkymanbyday, Benjamin Bach)
 * Django 3.0 support :url-issue:`1019` (Benjamin Bach, slinkymanbyday)
 * New plugin ``wiki.plugins.editsection`` displays an ``[edit]`` link next to section headers (Frank Loemker) :url-issue:`652`
 
@@ -27,23 +37,32 @@ Fixed
 * Python 3.7 issue with notifications plugin main view ``/_plugin/notifications/`` :url-issue:`1000` (Mads Jensen)
 * Broken Delete and Deleted pages :url-issue:`976` (Benjamin Bach)
 * Can't delete article with ``USE_THOUSAND_SEPARATOR = True`` :url-issue:`1014` (tim3towers)
-
+* Deleting images fails :url-issue:'936' (Gert-Jan Braas, Steckelfisch)
 
 Changed
 ~~~~~~~
 
+* Use SASS instead of LESS for Stylesheets. The compiler in ``Makefile`` is ``lessc``. :url-issue:`1035` (Benjamin Bach)
+* Removed ``src/wiki/static/wiki/css/wiki-bootstrap.css`` - Only distribute a minified CSS version. :url-issue:`1035` (Benjamin Bach)
 * Test coverage upped from 75 to 80+% :url-issue:`976` (Mads Jensen, Benjamin Bach)
 * PDF attachment Content-Disposition header changed to ``inline`` for browser previewing :url-issue:`1010` (nicolazilio)
 * PyTest upgraded to latest 5.3
 * django-mptt updated from 0.9 to 0.11.0 :url-issue:`1019` (Benjamin Bach, slinkymanbyday)
 * sorl-thumbnail bumped to 12.6.2 :url-issue:`1019` (Benjamin Bach, slinkymanbyday)
 * Upgrade bleach from 2.1 to 3.1 :url-issue:`1020` (slinkymanbyday)
+* Python-Markdown 3.2 compatibility (Benjamin Bach)
 
 Removed
 ~~~~~~~
 
 * Python 3.4 support more or less definitively removed (no longer supported by test suite PyTest)
 * Removed unmaintained plugin ``wiki.plugins.haystack``
+
+Translations
+~~~~~~~~~~~~
+
+* Dutch translation 100% completed :url-issue:`1037` (Gert-Jan Braas)
+* Polish 100% completed
 
 0.5
 ---

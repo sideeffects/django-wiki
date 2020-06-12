@@ -24,7 +24,7 @@ The below table explains which Django versions are supported.
 +------------------+----------------+--------------+
 | Release          | Django         | Upgrade from |
 +==================+================+==============+
-| 0.6b1            | 2.1, 2.2, 3.0  | 0.5          |
+| 0.6.x            | 2.1, 2.2, 3.0  | 0.5          |
 +------------------+----------------+--------------+
 | 0.5.x            | 2.1, 2.2       | 0.4          |
 +------------------+----------------+--------------+
@@ -64,7 +64,8 @@ Demo
 ----
 
 A demo running the latest ``master`` is available here, sign up for an
-account to see the notification system.
+account to see the notification system, or you can log in with
+user:``test`` and password:``test``.
 
 https://demo.django-wiki.org
 
